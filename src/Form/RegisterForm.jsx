@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
+import AuthContext from "../AuthContext/AuthContext";
 
 const RegisterForm = () => {
   const [passwordError, setPasswordError] = useState("");
+  const { createUser } = useContext(AuthContext);
 
   const validatePassword = (password) => {
     const minLength = /.{6,}/; // কমপক্ষে ৬ ডিজিট
@@ -29,17 +31,32 @@ const RegisterForm = () => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
+    const confirmPassword = e.target.confirmPassword.value;
     const name = e.target.name.value;
+
+    // পাসওয়ার্ড ভ্যালিডেশন
+    const passwordValidationError = validatePassword(password);
+    if (passwordValidationError) {
+      setPasswordError(passwordValidationError);
+      return; // ভ্যালিডেশন না হলে ফর্ম সাবমিট হবে না
+    }
+
+    // যদি পাসওয়ার্ড মেলে না
+    if (password !== confirmPassword) {
+      setPasswordError("Passwords do not match.");
+      return;
+    }
+
     const form = { name, email, password };
 
-    // const error = validatePassword(password);
-    // if (error) {
-    //   setPasswordError(error);
-    // } else {
-    //   setPasswordError("");
-    //   console.log("Registration successful:", form);
-    //   // এখানে API কল বা ফর্ম সাবমিট করতে পারেন
-    // }
+    // createUser ফাংশন চালান
+    createUser(email, password)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -94,11 +111,8 @@ const RegisterForm = () => {
                 placeholder="Enter your password"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              {passwordError && (
-                <p className="text-red-500 text-sm mt-2">{passwordError}</p>
-              )}
             </div>
-            <div className="mb-6">
+            <div className="mb-4">
               <label
                 htmlFor="confirmPassword"
                 className="block text-gray-700 font-medium mb-2"
@@ -113,6 +127,9 @@ const RegisterForm = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+            {passwordError && (
+              <p className="text-red-500 text-sm mt-2">{passwordError}</p>
+            )}
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
