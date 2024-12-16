@@ -1,7 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 const RegisterForm = () => {
+  const [passwordError, setPasswordError] = useState("");
+
+  const validatePassword = (password) => {
+    const minLength = /.{6,}/; // কমপক্ষে ৬ ডিজিট
+    const uppercase = /[A-Z]/; // বড় হাতের অক্ষর
+    const number = /\d/; // সংখ্যা
+    const specialChar = /[!@#$%^&*(),.?":{}|<>]/; // স্পেশাল ক্যারেক্টার
+
+    if (!minLength.test(password)) {
+      return "Password must be at least 6 characters long.";
+    }
+    if (!uppercase.test(password)) {
+      return "Password must contain at least one uppercase letter.";
+    }
+    if (!number.test(password)) {
+      return "Password must contain at least one number.";
+    }
+    if (!specialChar.test(password)) {
+      return "Password must contain at least one special character.";
+    }
+    return "";
+  };
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const name = e.target.name.value;
+    const form = { name, email, password };
+
+    // const error = validatePassword(password);
+    // if (error) {
+    //   setPasswordError(error);
+    // } else {
+    //   setPasswordError("");
+    //   console.log("Registration successful:", form);
+    //   // এখানে API কল বা ফর্ম সাবমিট করতে পারেন
+    // }
+  };
+
   return (
     <div>
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -9,7 +49,7 @@ const RegisterForm = () => {
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
             Register
           </h2>
-          <form>
+          <form onSubmit={handleRegister}>
             <div className="mb-4">
               <label
                 htmlFor="name"
@@ -19,7 +59,7 @@ const RegisterForm = () => {
               </label>
               <input
                 type="text"
-                name="text"
+                name="name"
                 required
                 placeholder="Enter your full name"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -54,6 +94,9 @@ const RegisterForm = () => {
                 placeholder="Enter your password"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              {passwordError && (
+                <p className="text-red-500 text-sm mt-2">{passwordError}</p>
+              )}
             </div>
             <div className="mb-6">
               <label
@@ -65,6 +108,7 @@ const RegisterForm = () => {
               <input
                 type="password"
                 name="confirmPassword"
+                required
                 placeholder="Confirm your password"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
