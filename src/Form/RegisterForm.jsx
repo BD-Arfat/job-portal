@@ -1,10 +1,11 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import AuthContext from "../AuthContext/AuthContext";
+import Swal from "sweetalert2";
 
 const RegisterForm = () => {
   const [passwordError, setPasswordError] = useState("");
-  const { createUser } = useContext(AuthContext);
+  const { users, createUser } = useContext(AuthContext);
 
   const validatePassword = (password) => {
     const minLength = /.{6,}/; // কমপক্ষে ৬ ডিজিট
@@ -53,9 +54,23 @@ const RegisterForm = () => {
     createUser(email, password)
       .then((result) => {
         console.log(result);
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Account Create Successfully !!!!!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       })
       .catch((err) => {
         console.log(err);
+        Swal.fire({
+          position: "top-end",
+          icon: "error",
+          title: `${err.message}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
       });
   };
 

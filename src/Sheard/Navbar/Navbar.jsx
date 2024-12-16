@@ -1,11 +1,15 @@
-// Navbar.js
-import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Import React Router Link
+import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom";
+import AuthContext from "../../AuthContext/AuthContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu toggle state
+  const { users } = useContext(AuthContext); // Context থেকে লগইন ইউজার আনুন
 
   const handleMenuToggle = () => setIsMenuOpen(!isMenuOpen); // Toggle mobile menu visibility
+
+  // ইমেইলের প্রথম অক্ষর বের করা (যদি ইউজার লগইন থাকে)
+  const firstLetter = users?.email ? users.email[0].toUpperCase() : "";
 
   const items = (
     <>
@@ -34,10 +38,10 @@ const Navbar = () => {
         About
       </Link>
       <Link
-        to="/register"
+        to="/login"
         className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium flex items-center bg-green-600"
       >
-        Register
+        Login Now
       </Link>
     </>
   );
@@ -79,7 +83,24 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden sm:block sm:ml-6">
-            <div className="flex space-x-4">{items}</div>
+            <div className="flex space-x-4 items-center">
+              {items}
+
+              {/* গোল শেপ ইমেজ */}
+              {users?.email && (
+                <div className="relative group">
+                  <div className="w-10 h-10 bg-green-600 text-white flex items-center justify-center rounded-full text-lg font-bold cursor-pointer">
+                    {firstLetter}
+                  </div>
+
+                  {/* টুলটিপ */}
+
+                  <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 -translate-y-2 bg-gray-800 text-white text-sm py-1 px-3 rounded shadow-lg hidden group-hover:block z-50">
+                    {users.email}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

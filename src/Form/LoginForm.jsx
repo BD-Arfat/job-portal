@@ -1,7 +1,38 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import AuthContext from "../AuthContext/AuthContext";
+import Swal from "sweetalert2";
 
 const LoginForm = () => {
+  const { loginUser } = useContext(AuthContext);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    console.log(email, password);
+    loginUser(email, password)
+      .then((res) => {
+        console.log(res);
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "User Login Successful !!!!",
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      })
+      .catch((error) => {
+        Swal.fire({
+          position: "top-end",
+          icon: "error",
+          title: `${error.message}`,
+          showConfirmButton: false,
+          timer: 3000,
+        });
+      });
+  };
+
   return (
     <div>
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -9,7 +40,7 @@ const LoginForm = () => {
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
             Login
           </h2>
-          <form>
+          <form onSubmit={handleLogin}>
             {/* Email Field */}
             <div className="mb-4">
               <label
