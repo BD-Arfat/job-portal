@@ -1,16 +1,47 @@
 import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import AuthContext from "../../AuthContext/AuthContext";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu toggle state
-  const { users } = useContext(AuthContext); // Context থেকে লগইন ইউজার আনুন
+  const { users, singOutUser } = useContext(AuthContext); // Context থেকে লগইন ইউজার আনুন
 
   const handleMenuToggle = () => setIsMenuOpen(!isMenuOpen); // Toggle mobile menu visibility
 
   // ইমেইলের প্রথম অক্ষর বের করা (যদি ইউজার লগইন থাকে)
   const firstLetter = users?.email ? users.email[0].toUpperCase() : "";
 
+  const handleSingOuts = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, logout!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        singOutUser()
+          .then(() => {
+            Swal.fire({
+              title: "Logged Out!",
+              text: "You have successfully logged out.",
+              icon: "success",
+            });
+          })
+          .catch((err) => {
+            Swal.fire({
+              title: "Error!",
+              text: "Something went wrong. Please try again.",
+              icon: "error",
+            });
+            console.error(err);
+          });
+      }
+    });
+  };
   const items = (
     <>
       <Link
@@ -37,12 +68,21 @@ const Navbar = () => {
       >
         About
       </Link>
-      <Link
-        to="/login"
-        className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium flex items-center bg-green-600"
-      >
-        Login Now
-      </Link>
+      {users ? (
+        <Link
+          onClick={handleSingOuts}
+          className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium flex items-center bg-green-600"
+        >
+          Logout
+        </Link>
+      ) : (
+        <Link
+          to="/login"
+          className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium flex items-center bg-green-600"
+        >
+          Login Now
+        </Link>
+      )}
     </>
   );
 
